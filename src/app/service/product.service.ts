@@ -5,7 +5,7 @@ import { ProductDTO } from '../model/Product';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private readonly baseUrl = 'http://localhost:8080/api/products';
+  private readonly baseUrl = 'http://localhost:8080/api';
   constructor(private http: HttpClient) {}
 
   /**
@@ -24,7 +24,11 @@ export class ProductService {
 
     // Page<ProductDTO> with 'content' array - need to observe array to list, further implementations
     return this.http
-      .get<{ content: ProductDTO[] }>(this.baseUrl, { params })
+      .get<{ content: ProductDTO[] }>(this.baseUrl + '/products', { params })
       .pipe(map((response) => response.content));
+  }
+
+  getCategories(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.baseUrl}/category/parent`);
   }
 }

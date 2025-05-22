@@ -7,16 +7,22 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ProductDTO } from '../../../model/Product';
 import { ProductService } from '../../../service/product.service';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
   imports: [
     CommonModule,
+    MatRadioModule,
     HttpClientModule,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
     FormsModule,
   ],
   templateUrl: './product-list.component.html',
@@ -32,10 +38,24 @@ export class ProductListComponent implements OnInit {
   ];
   dataSource: ProductDTO[] = [];
   filterValue = '';
+  selectedAvailability: any;
 
   constructor(private productService: ProductService) {}
 
   ngOnInit(): void {
+    this.loadData();
+  }
+
+  categories: string[] = [];
+  selectedCategory: string = '';
+
+  ngAfterViewInit(): void {
+    this.productService.getCategories().subscribe((cats: string[]) => {
+      this.categories = cats;
+    });
+  }
+
+  onCategoryChange(): void {
     this.loadData();
   }
 
@@ -47,5 +67,34 @@ export class ProductListComponent implements OnInit {
 
   applyFilter(): void {
     this.loadData();
+    if (this.selectedCategory) {
+      const selectedCategoryFirstWord = this.selectedCategory.split(' ')[0];
+      this.productService.list(this.filterValue).subscribe((data) => {
+        this.dataSource = data.filter(
+          (product) =>
+            product.categoryPath.split(' ')[0] === selectedCategoryFirstWord
+        );
+      });
+    }
+  }
+
+  applyRadioFilter(): void {
+    this.loadData();
+    if (
+      this.selectedAvailability !== undefined &&
+      this.selectedAvailability !== null &&
+      this.selectedAvailability !== 'All'
+    ) {
+      this.productService.list(this.filterValue).subscribe((data) => {
+        this.dataSource = data.filter(
+          (product) =>
+            product.available === (this.selectedAvailability === 'true')
+        );
+      });
+    }
+
+    if (this.selectedAvailability === '') {
+      this.loadData();
+    }
   }
 }

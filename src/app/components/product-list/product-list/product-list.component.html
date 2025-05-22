@@ -1,5 +1,5 @@
 <div class="filter-container" style="margin: 16px 0">
-  <mat-form-field appearance="outline" style="width: 100%">
+  <mat-form-field appearance="outline" style="width: 40%">
     <mat-label>Filter</mat-label>
     <input
       matInput
@@ -8,6 +8,38 @@
       placeholder="Type to filter products"
     />
   </mat-form-field>
+  <mat-select
+    appearance="outline"
+    style="width: 20%; margin: 10px"
+    placeholder="Category"
+    [(ngModel)]="selectedCategory"
+    (selectionChange)="applyFilter()"
+  >
+    <mat-option value="">All Categories</mat-option>
+    <mat-option *ngFor="let category of categories" [value]="category">
+      {{ category }}
+    </mat-option>
+  </mat-select>
+  <mat-radio-group
+    appearance="outline"
+    style="width: 20%"
+    [(ngModel)]="selectedAvailability"
+    (change)="applyRadioFilter()"
+    style="
+      margin-left: 16px;
+      display: inline-flex;
+      align-items: center;
+      margin: 10px;
+    "
+  >
+    <mat-radio-button value="">All</mat-radio-button>
+    <mat-radio-button value="true" style="margin-left: 8px"
+      >Available</mat-radio-button
+    >
+    <mat-radio-button value="false" style="margin-left: 8px"
+      >Not Available</mat-radio-button
+    >
+  </mat-radio-group>
 </div>
 
 <table
